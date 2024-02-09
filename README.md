@@ -1,5 +1,5 @@
 # Traefik Examples
-A few examples for traefik reverse proxy.
+A few practical examples for traefik reverse proxy.
 Every folder contains an example which showcases one
 specific usecase for traefik.
 
@@ -25,3 +25,9 @@ Show the traefik dashboard and run two services on the same domain, separated by
 
 ### 03 Authentication
 Use traefik middlewares to force an HTTP basic authentication for your services
+
+### 04 Subdomains
+Create services that listen to different subdomains
+
+### 05 HTTPS with Let's Encrypt
+Use HTTPS for your services

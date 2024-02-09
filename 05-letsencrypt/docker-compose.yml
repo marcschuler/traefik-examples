@@ -1,0 +1,40 @@
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: always
+    command:
+      - --providers.docker=true # Use docker as a provider
+      # HTTP - redirect to HTTPS if possible (web -> websecure)
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.redirections.entryPoint.to=websecure
+      - --entrypoints.web.http.redirections.entryPoint.scheme=https
+      # HTTPS
+      - --entrypoints.websecure.address=:443
+      - --certificatesresolvers.leresolver.acme.email=test@example.com
+      - --certificatesresolvers.leresolver.acme.storage=/letsencrypt/acme.json
+      - --certificatesresolvers.leresolver.acme.httpchallenge.entrypoint=web
+    ports:
+      - 80:80 # Expose port 80
+      - 443:443 # Export port 443
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Expose docker so traefik can "see" our services and it's labels
+      - ./letsencrypt:/letsencrypt # Keep certificates in case of container recreation. Lets Encrypt does not like requesting multiple certificates per week
+
+  # A basic whoami server which returns what the browser send including the IP
+  whoami:
+    image: traefik/whoami
+    restart: always
+    labels:
+      - traefik.enable=true # Enable traefik for this service
+      - traefik.http.routers.whoami.rule=Host(`whoami.localhost`) # Route only if host whoami.localhost is called
+      - traefik.http.routers.whoami.tls=true
+
+  # An empty httpd web server
+  httpd:
+    image: httpd
+    restart: always
+    labels:
+      - traefik.enable=true # Enable traefik for this service
+      - traefik.http.routers.httpd.rule=Host(`webserver.localhost`) # Route only if host httpd.localhost is called
+      - traefik.http.routers.httpd.tls=true
