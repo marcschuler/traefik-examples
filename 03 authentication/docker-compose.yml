@@ -1,0 +1,22 @@
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: always
+    command:
+      - --api.dashboard=true # Enable the internal dashboard
+      - --providers.docker=true # Use docker as a provider
+      - --entrypoints.web.address=:80 # Use port 80 for HTTP
+    labels:
+      - traefik.enable=true # Enable traefik for this service
+      - traefik.http.routers.dashboard.rule=Host(`localhost`) && (PathPrefix(`/dashboard/`) || PathPrefix(`/api`)) # Only route if user enters via localhost/dashboard/ or calls localhost/api
+      - traefik.http.routers.dashboard.service=api@internal # We want to use the internal (dashboard) service
+      - traefik.http.routers.dashboard.middlewares=admin-auth # define that the 'dashboard' service has to use the admin-auth middleware
+
+      # This only has to be declared once globally, not per service.
+      # It creates a middleware called 'admin-auth' that uses basic auth
+      - traefik.http.middlewares.admin-auth.basicauth.users=admin:$$2a$$10$$lMU44XiHA0ToIKn4dLta5.Jup4BtUvC7ppriRawL57ndFvsw9S66u
+    ports:
+      - 80:80 # Expose port 80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Expose docker so traefik can "see" our services and it's labels

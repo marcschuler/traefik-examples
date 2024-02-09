@@ -1,0 +1,20 @@
+services:
+  traefik:
+    image: traefik
+    container_name: traefik
+    restart: always
+    command:
+      - --providers.docker=true # Use docker as a provider
+      - --entrypoints.web.address=:80 # Use port 80 for HTTP
+    ports:
+      - 80:80 # Expose port 80
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro  # Expose docker so traefik can "see" our services and it's labels
+
+  # A basic whoami server which returns what the browser send including the IP
+  whoami:
+    image: traefik/whoami
+    restart: always
+    labels:
+      - traefik.enable=true # Enable traefik for this service
+      - traefik.http.routers.whoami.rule=Host(`whoami.localhost`) # Route only if host whoami.localhost is called
