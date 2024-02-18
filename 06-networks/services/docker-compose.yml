@@ -1,0 +1,21 @@
+services:
+
+  whoami:
+    image: traefik/whoami
+    restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.whoami.rule=Host(`whoami.localhost`)
+    networks:
+      - network-traefik
+
+  httpd:
+    image: httpd
+    restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.httpd.rule=Host(`webserver.localhost`)
+
+networks:
+  network-traefik:
+    external: true

@@ -30,4 +30,7 @@ Use traefik middlewares to force an HTTP basic authentication for your services
 Create services that listen to different subdomains
 
 ### 05 HTTPS with Let's Encrypt
-Use HTTPS for your services
+Use Let's Encrypt to automatically generate HTTPS certificates for you
+
+### 06 Networks and multiple docker-compose files
+Use traefik for services defined in other docker-compose files using docker networks
