@@ -4,17 +4,12 @@ services:
     container_name: traefik
     restart: always
     command:
-      - --api.dashboard=true # Enable the internal dashboard
-      - --providers.docker=true # Use docker as a provider
-      - --entrypoints.web.address=:80 # Use port 80 for HTTP
-    labels:
-      - traefik.enable=true # Enable traefik for this service
-      - traefik.http.routers.dashboard.rule=Host(`localhost`) && (PathPrefix(`/dashboard/`) || PathPrefix(`/api`)) # Only route if user enters via localhost/dashboard/ or calls localhost/api
-      - traefik.http.routers.dashboard.service=api@internal # We want to use the internal (dashboard) service
+      - --providers.docker=true
+      - --entrypoints.web.address=:80
     ports:
-      - 80:80 # Expose port 80
+      - 80:80
     volumes:
-      - /var/run/docker.sock:/var/run/docker.sock:ro  # Expose docker so traefik can "see" our services and it's labels
+      - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - network-traefik # With this network, all services can communicate to traefik
 
